@@ -13,7 +13,7 @@ public class Util {
 
     public Connection getConnection (){
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             System.out.println("JDBC driver error.");
