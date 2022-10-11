@@ -22,11 +22,11 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
     public void createUsersTable() {
         String SQL = "create table if not exists Users\n" +
                 "(\n" +
-                "    id       int auto_increment\n" +
-                "        primary key,\n" +
-                "    name VARCHAR(64) null,\n" +
-                "    lastname VARCHAR(64) null,\n" +
-                "    age      TINYINT     null\n" +
+                "id int auto_increment\n" +
+                "primary key,\n" +
+                "name VARCHAR(64) null,\n" +
+                "lastname VARCHAR(64) null,\n" +
+                "age TINYINT null\n" +
                 ");";
         try (Connection connection = getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(SQL);
@@ -78,9 +78,7 @@ public class UserDaoJDBCImpl extends Util implements UserDao {
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String SQL = "SELECT * FROM Users";
-        try {
-            Statement statement = getConnection().createStatement();
-
+        try (Connection connection = getConnection(); Statement statement = connection.createStatement()){
             ResultSet resultSet = statement.executeQuery(SQL);
 
             while (resultSet.next()) {
