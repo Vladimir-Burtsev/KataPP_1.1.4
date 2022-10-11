@@ -11,7 +11,7 @@ public class Util {
     private static String user = "root";
     private static String pass = "root";
 
-    public Connection getConnection (){
+    public static Connection getConnection(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
