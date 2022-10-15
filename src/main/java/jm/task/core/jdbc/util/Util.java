@@ -1,29 +1,73 @@
 package jm.task.core.jdbc.util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import jm.task.core.jdbc.model.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Environment;
+import org.hibernate.service.ServiceRegistry;
+
+import java.util.Properties;
 
 public class Util {
 
-    private static Connection con = null;
-    private static String url = "jdbc:mysql:// localhost:3306/mydbtest";
-    private static String user = "root";
-    private static String pass = "root";
 
-    public static Connection getConnection(){
+    private static final String URL = "jdbc:mysql:// localhost:3306/mydbtest";
+    private static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";
+    private static final String USER = "root";
+    private static final String PASS = "root";
+    private static final String DIALECT = "org.hibernate.dialect.MySQLDialect";
+
+    private static final SessionFactory sessionFactory;
+    private static Session session;
+    private static Transaction transaction;
+
+    static {
+        Properties settings = new Properties();
+        settings.put(Environment.DRIVER, DB_DRIVER);
+        settings.put(Environment.URL, URL);
+        settings.put(Environment.USER, USER);
+        settings.put(Environment.PASS, PASS);
+        settings.put(Environment.DIALECT, DIALECT);
+        settings.put(Environment.SHOW_SQL, "true");
+        settings.put(Environment.FORMAT_SQL, "true");
+        settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+        settings.put(Environment.HBM2DDL_AUTO, "create-drop");
+
+
+        ServiceRegistry registry = new StandardServiceRegistryBuilder()
+                .applySettings(settings).build();
+
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.out.println("JDBC driver error.");
+            sessionFactory = new MetadataSources(registry).addAnnotatedClass(User.class).buildMetadata().buildSessionFactory();
         }
-        try {
-            con = DriverManager.getConnection(url, user, pass);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Connection Error.");
+        catch (Exception e){
+            throw new ExceptionInInitializerError("Ошибка инициализации SessionFactory" + e);
         }
-        return con;
+    }
+
+    public static SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
+    public static void closeSessionFactory(){
+        getSessionFactory().close();
+    }
+
+    public static Session getSession(){
+        session = getSessionFactory().openSession();
+        return session;
+    }
+    public static void getTransaction(){
+        transaction = session.beginTransaction();
+    }
+    public static void closSession(){
+        getSession().close();
+    }
+    public static void closeTransaction(){
+        transaction.commit();
+        closSession();
     }
 }
