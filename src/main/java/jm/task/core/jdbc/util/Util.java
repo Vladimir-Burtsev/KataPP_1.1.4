@@ -14,15 +14,13 @@ import java.util.Properties;
 public class Util {
 
 
-    private static final String URL = "jdbc:mysql:// localhost:3306/mydbtest";
+    private static final String URL = "jdbc:mysql://localhost:3306/mydbtest";
     private static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String USER = "root";
     private static final String PASS = "root";
-    private static final String DIALECT = "org.hibernate.dialect.MySQLDialect";
+    private static final String DIALECT = "org.hibernate.dialect.MySQL8Dialect";
 
     private static final SessionFactory sessionFactory;
-    private static Session session;
-    private static Transaction transaction;
 
     static {
         Properties settings = new Properties();
@@ -56,18 +54,4 @@ public class Util {
         getSessionFactory().close();
     }
 
-    public static Session getSession(){
-        session = getSessionFactory().openSession();
-        return session;
-    }
-    public static void getTransaction(){
-        transaction = session.beginTransaction();
-    }
-    public static void closSession(){
-        getSession().close();
-    }
-    public static void closeTransaction(){
-        transaction.commit();
-        closSession();
-    }
 }
